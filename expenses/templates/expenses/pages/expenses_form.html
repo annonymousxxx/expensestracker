@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid px-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <!-- Header -->
+      <div class="mb-4">
+        <h2 class="fw-bold mb-1">{{ title }}</h2>
+        <p class="text-muted">Fill in the details below</p>
+      </div>
+
+      <!-- Form Card -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <form method="post">
+            {% csrf_token %}
+
+            <!-- Title Field -->
+            <div class="mb-4">
+              <label for="id_title" class="form-label fw-semibold">
+                <i class="fas fa-heading me-2 text-primary"></i>Title
+              </label>
+              {{ form.title }}
+              {% if form.title.errors %}
+              <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Amount Field -->
+            <div class="mb-4">
+              <label for="id_amount" class="form-label fw-semibold">
+                <i class="fas fa-peso-sign me-2 text-success"></i>Amount
+              </label>
+              {{ form.amount }}
+              {% if form.amount.errors %}
+              <div class="text-danger small mt-1">{{ form.amount.errors }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Category Field -->
+            <div class="mb-4">
+              <label for="id_category" class="form-label fw-semibold">
+                <i class="fas fa-tag me-2 text-warning"></i>Category
+              </label>
+              {{ form.category }}
+              {% if form.category.errors %}
+              <div class="text-danger small mt-1">{{ form.category.errors }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Date Field -->
+            <div class="mb-4">
+              <label for="id_date" class="form-label fw-semibold">
+                <i class="far fa-calendar me-2 text-info"></i>Date
+              </label>
+              {{ form.date }}
+              {% if form.date.errors %}
+              <div class="text-danger small mt-1">{{ form.date.errors }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Description Field -->
+            <div class="mb-4">
+              <label for="id_description" class="form-label fw-semibold">
+                <i class="fas fa-comment me-2"></i>Description
+                <span class="text-muted fw-normal">(optional)</span>
+              </label>
+              {{ form.description }}
+              {% if form.description.errors %}
+              <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                <i class="fas fa-save me-2"></i>Save Expense
+              </button>
+              <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Quick Tip -->
+      <div class="alert alert-info border-0 mt-3 d-flex align-items-center">
+        <i class="fas fa-lightbulb fa-2x me-3"></i>
+        <div>
+          <strong>Pro Tip:</strong> Fill this in 5 seconds! Just amount → category → save.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Light mode form field focus states */
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+  }
+
+  /* Alert box - light mode */
+  .alert-info {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    color: #014451;
+    border: 1px solid #b2ebf2;
+  }
+
+  /* Form field sizing */
+  #id_title,
+  #id_amount,
+  #id_date {
+    font-size: 1.25rem;
+    padding: 0.5rem 1rem;
+  }
+
+  #id_category {
+    font-size: 1.25rem;
+    padding: 0.5rem 1rem;
+  }
+
+  #id_description {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  /* ===== DARK MODE STYLES ===== */
+  [data-theme="dark"] .alert-info {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a7b 100%);
+    color: #a8d5ff;
+    border: 1px solid #3d6a8f;
+  }
+
+  [data-theme="dark"] .alert-info .fa-lightbulb {
+    color: #ffd700;
+  }
+
+  [data-theme="dark"] .alert-info strong {
+    color: #ffffff;
+  }
+
+  /* Enhanced form inputs for dark mode */
+  [data-theme="dark"] .form-control,
+  [data-theme="dark"] .form-select {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border: 2px solid #4a4a4a;
+  }
+
+  [data-theme="dark"] .form-control:focus,
+  [data-theme="dark"] .form-select:focus {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border-color: #8b9dff;
+    box-shadow: 0 0 0 0.25rem rgba(139, 157, 255, 0.25);
+  }
+
+  [data-theme="dark"] .form-control::placeholder {
+    color: #888888;
+  }
+
+  /* Enhanced labels for dark mode */
+  [data-theme="dark"] .form-label {
+    color: #f0f0f0;
+    font-weight: 600;
+  }
+
+  /* Icon colors for better visibility in dark mode */
+  [data-theme="dark"] .text-primary {
+    color: #8b9dff !important;
+  }
+
+  [data-theme="dark"] .text-success {
+    color: #6dd47e !important;
+  }
+
+  [data-theme="dark"] .text-warning {
+    color: #ffb347 !important;
+  }
+
+  [data-theme="dark"] .text-info {
+    color: #64b5f6 !important;
+  }
+
+  /* Enhanced card styling for dark mode */
+  [data-theme="dark"] .card {
+    background-color: #2d2d2d;
+    border: 1px solid #404040;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Button styling for dark mode */
+  [data-theme="dark"] .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+  }
+
+  [data-theme="dark"] .btn-primary:hover {
+    background: linear-gradient(135deg, #7a8ef5 0%, #8a5cb8 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+  }
+
+  [data-theme="dark"] .btn-outline-secondary {
+    color: #b0b0b0;
+    border-color: #5a5a5a;
+  }
+
+  [data-theme="dark"] .btn-outline-secondary:hover {
+    background-color: #3a3a3a;
+    border-color: #6a6a6a;
+    color: #ffffff;
+  }
+
+  /* Improved text colors */
+  [data-theme="dark"] h2 {
+    color: #ffffff;
+  }
+
+  [data-theme="dark"] .text-muted {
+    color: #a0a0a0 !important;
+  }
+
+  /* Error message styling */
+  [data-theme="dark"] .text-danger {
+    color: #ff6b6b !important;
+  }
+
+  /* Add smooth transitions */
+  .form-control,
+  .form-select,
+  .btn {
+    transition: all 0.2s ease;
+  }
+</style>
+{% endblock %}

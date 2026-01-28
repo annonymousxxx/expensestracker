@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Header with Month -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold mb-1">{{ current_month }}</h2>
+            <p class="text-muted">Here's your spending overview</p>
+        </div>
+    </div>
+
+    <!-- Main Stats Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Total Spent -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 stat-card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3">
+                            <i class="fas fa-wallet fa-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-0 small">Total Spent</p>
+                            <h3 class="mb-0 fw-bold">₱{{ total_spent|floatformat:2 }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Category -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 stat-card">
+                <div class="card-body p-4">
+                    {% if top_category %}
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="stat-icon bg-success bg-opacity-10 text-success rounded-circle p-3 me-3">
+                            <i class="fas fa-chart-pie fa-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-0 small">Most Spending</p>
+                            <h5 class="mb-0 fw-bold">{{ top_category.category }}</h5>
+                            <p class="text-success mb-0">₱{{ top_category.total|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="stat-icon bg-success bg-opacity-10 text-success rounded-circle p-3 me-3">
+                            <i class="fas fa-smile fa-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-0">No expenses yet</p>
+                            <p class="small mb-0">Start tracking!</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Add Button -->
+        <div class="col-md-12 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 bg-gradient-primary text-white quick-add-card">
+                <div class="card-body p-4 d-flex align-items-center justify-content-center">
+                    <a href="{% url 'expense_create' %}" class="text-white text-decoration-none text-center">
+                        <i class="fas fa-plus-circle fa-3x mb-2"></i>
+                        <p class="mb-0 fw-bold">Add New Expense</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <!-- Category Breakdown Pie Chart -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-4">💰 Where My Money Went</h5>
+                    {% if category_stats %}
+                    <canvas id="categoryChart" height="250"></canvas>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-chart-pie fa-3x mb-3 opacity-25"></i>
+                        <p>No expenses to show yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Trend Bar Chart -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-4">📊 Last 6 Months</h5>
+                    <canvas id="monthlyChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Expenses -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title fw-bold mb-0">Recent Expenses</h5>
+                        <a href="{% url 'expense_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    {% if recent_expenses %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <tbody>
+                                {% for expense in recent_expenses %}
+                                <tr>
+                                    <td class="border-0">
+                                        <div class="d-flex align-items-center">
+                                            <span class="category-badge me-2">{{ expense.category }}</span>
+                                            <div>
+                                                <strong>{{ expense.title }}</strong>
+                                                <br><small class="text-muted">{{ expense.date|date:"M d, Y" }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="border-0 text-end">
+                                        <strong class="text-primary">₱{{ expense.amount|floatformat:2 }}</strong>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-receipt fa-3x mb-3 opacity-25"></i>
+                        <p>No recent expenses</p>
+                        <a href="{% url 'expense_create' %}" class="btn btn-primary">Add Your First Expense</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<script>
+    // Category Pie Chart
+    {% if category_stats %}
+    const categoryCtx = document.getElementById('categoryChart');
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for cat in category_stats %}'{{ cat.category }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            data: [{% for cat in category_stats %}{{ cat.total }}{% if not forloop.last %}, {% endif %} {% endfor %}],
+    backgroundColor: [
+        '#FF6384',
+        '#36A2EB',
+        '#FFCE56',
+        '#4BC0C0',
+        '#9966FF'
+    ],
+        borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+            maintainAspectRatio: true,
+                plugins: {
+            legend: {
+                position: 'bottom',
+                    labels: {
+                    padding: 15,
+                        font: { size: 12 }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': ₱' + context.parsed.toFixed(2);
+                    }
+                }
+            }
+        }
+    }
+});
+    {% endif %}
+
+    // Monthly Trend Bar Chart
+    const monthlyCtx = document.getElementById('monthlyChart');
+    new Chart(monthlyCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for month in months_data %}'{{ month.month }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Spending',
+            data: [{% for month in months_data %}{{ month.total }}{% if not forloop.last %}, {% endif %} {% endfor %}],
+    backgroundColor: '#4A90E2',
+        borderRadius: 6,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+            maintainAspectRatio: true,
+                plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return '₱' + context.parsed.y.toFixed(2);
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                    ticks: {
+                    callback: function(value) {
+                        return '₱' + value;
+                    }
+                },
+                grid: { display: false }
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+    }
+});
+</script>
+
+<style>
+    .stat-card {
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quick-add-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .quick-add-card:hover {
+        transform: scale(1.02);
+    }
+
+    .category-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background: #f0f0f0;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+</style>
+{% endblock %}

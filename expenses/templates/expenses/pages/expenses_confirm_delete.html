@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid px-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-5">
+      <!-- Warning Card -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 text-center">
+          <!-- Warning Icon -->
+          <div class="mb-4">
+            <div class="warning-icon mx-auto">
+              <i class="fas fa-exclamation-triangle fa-3x"></i>
+            </div>
+          </div>
+
+          <!-- Title -->
+          <h3 class="fw-bold mb-2">Delete This Expense?</h3>
+          <p class="text-muted mb-4">This action cannot be undone</p>
+
+          <!-- Expense Details -->
+          <div class="alert alert-light border mb-4">
+            <div class="mb-2">
+              <span class="category-badge">{{ expense.category }}</span>
+            </div>
+            <h5 class="fw-bold mb-1">{{ expense.title }}</h5>
+            <p class="text-primary fw-bold mb-1">₱{{ expense.amount|floatformat:2 }}</p>
+            <small class="text-muted">{{ expense.date|date:"M d, Y" }}</small>
+          </div>
+
+          <!-- Confirmation Form -->
+          <form method="post">
+            {% csrf_token %}
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-danger btn-lg flex-fill">
+                <i class="fas fa-trash me-2"></i>Yes, Delete It
+              </button>
+              <a href="{% url 'expense_detail' expense.pk %}" class="btn btn-outline-secondary btn-lg flex-fill">
+                <i class="fas fa-times me-2"></i>Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Info Note -->
+      <div class="text-center mt-3">
+        <small class="text-muted">
+          <i class="fas fa-info-circle me-1"></i>
+          You can always add it back later if needed
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .warning-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ffe066 0%, #ff9966 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 153, 102, 0.3);
+  }
+
+  .category-badge {
+    padding: 4px 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+</style>
+{% endblock %}

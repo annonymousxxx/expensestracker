@@ -1,0 +1,18 @@
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Amount</th>
+      <th>Category</th>
+      <th>Date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for expense in expenses %}
+      {% include 'expenses/molecules/expenses_row.html' %}
+    {% empty %}
+      <tr><td colspan="5" class="text-center">No expenses found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
