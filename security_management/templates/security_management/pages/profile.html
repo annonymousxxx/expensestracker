@@ -1,281 +1,631 @@
-{% extends '../base.html' %}
+{% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
   <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-8 col-xl-7">
       <!-- Header -->
-      <div class="mb-4">
-        <h2 class="fw-bold mb-1">
-          <i class="fas fa-user-circle me-2"></i>My Profile
-        </h2>
-        <p class="text-muted">Manage your account settings</p>
+      <div class="mb-4 text-center">
+        <div class="profile-icon-wrapper mb-3">
+          <div class="profile-icon">
+            <i class="fas fa-user-circle fa-3x"></i>
+          </div>
+        </div>
+        <h1 class="fw-bold mb-2 gradient-text">{{ user.username }}'s Profile</h1>
+        <p class="text-secondary fs-6">Update your information below</p>
       </div>
 
       <!-- Success/Error Messages -->
       {% if messages %}
       {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      <div class="alert alert-{{ message.tags }} alert-modern alert-dismissible fade show" role="alert">
         <i class="fas fa-check-circle me-2"></i>{{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
       {% endfor %}
       {% endif %}
 
-      <!-- Current User Info Card -->
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-4">
-          <h5 class="card-title mb-3">
-            <i class="fas fa-info-circle me-2 text-primary"></i>Current Information
-          </h5>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <strong>Username:</strong> {{ user.username }}
+      <!-- Profile Edit Form -->
+      <div class="form-card card border-0 mb-4">
+        <div class="card-body p-4 p-md-5">
+          <div class="d-flex align-items-center mb-4">
+            <div class="icon-badge icon-badge-primary me-3">
+              <i class="fas fa-user-edit"></i>
             </div>
-            <div class="col-md-6">
-              <strong>Email:</strong> {{ user.email|default:"Not set" }}
+            <div>
+              <h5 class="mb-0">Personal Information</h5>
+              <small class="text-muted">Keep your profile up to date</small>
             </div>
-            <div class="col-md-6">
-              <strong>First Name:</strong> {{ user.first_name|default:"Not set" }}
+          </div>
+
+          <form method="post" id="profileForm">
+            {% csrf_token %}
+
+            <div class="row g-3">
+              <!-- Username -->
+              <div class="col-md-6 form-group-modern">
+                <label for="{{ profile_form.username.id_for_label }}" class="form-label">
+                  <i class="fas fa-user me-2 label-icon"></i>Username
+                </label>
+                <div class="input-wrapper">
+                  {{ profile_form.username }}
+                  <div class="input-underline"></div>
+                </div>
+                {% if profile_form.username.errors %}
+                <div class="error-message mt-2">
+                  <i class="fas fa-exclamation-circle me-1"></i>{{ profile_form.username.errors }}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Email -->
+              <div class="col-md-6 form-group-modern">
+                <label for="{{ profile_form.email.id_for_label }}" class="form-label">
+                  <i class="fas fa-envelope me-2 label-icon"></i>Email Address
+                </label>
+                <div class="input-wrapper">
+                  {{ profile_form.email }}
+                  <div class="input-underline"></div>
+                </div>
+                {% if profile_form.email.errors %}
+                <div class="error-message mt-2">
+                  <i class="fas fa-exclamation-circle me-1"></i>{{ profile_form.email.errors }}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- First Name -->
+              <div class="col-md-6 form-group-modern">
+                <label for="{{ profile_form.first_name.id_for_label }}" class="form-label">
+                  <i class="fas fa-id-card me-2 label-icon"></i>First Name
+                </label>
+                <div class="input-wrapper">
+                  {{ profile_form.first_name }}
+                  <div class="input-underline"></div>
+                </div>
+                {% if profile_form.first_name.errors %}
+                <div class="error-message mt-2">
+                  <i class="fas fa-exclamation-circle me-1"></i>{{ profile_form.first_name.errors }}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Last Name -->
+              <div class="col-md-6 form-group-modern">
+                <label for="{{ profile_form.last_name.id_for_label }}" class="form-label">
+                  <i class="fas fa-id-card-alt me-2 label-icon"></i>Last Name
+                </label>
+                <div class="input-wrapper">
+                  {{ profile_form.last_name }}
+                  <div class="input-underline"></div>
+                </div>
+                {% if profile_form.last_name.errors %}
+                <div class="error-message mt-2">
+                  <i class="fas fa-exclamation-circle me-1"></i>{{ profile_form.last_name.errors }}
+                </div>
+                {% endif %}
+              </div>
             </div>
-            <div class="col-md-6">
-              <strong>Last Name:</strong> {{ user.last_name|default:"Not set" }}
+
+            <div class="d-flex gap-3 mt-4">
+              <button type="submit" name="update_profile" class="btn btn-success btn-lg flex-fill submit-btn">
+                <i class="fas fa-save me-2"></i>Save Changes
+                <span class="btn-shine"></span>
+              </button>
+              <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Password Change Section -->
+      <div class="password-section">
+        <button class="password-toggle-btn" onclick="togglePasswordSection()">
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="d-flex align-items-center">
+              <div class="icon-badge icon-badge-danger me-3">
+                <i class="fas fa-key"></i>
+              </div>
+              <div class="text-start">
+                <h5 class="mb-0">Change Password</h5>
+                <small class="text-muted">Update your account password</small>
+              </div>
+            </div>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </div>
+        </button>
+
+        <div class="password-form-container" id="passwordFormContainer">
+          <div class="form-card card border-0 mt-3">
+            <div class="card-body p-4 p-md-5">
+              <div class="alert alert-info alert-modern mb-4">
+                <i class="fas fa-shield-alt me-2"></i>
+                <strong>Security Tip:</strong> Use a strong password with at least 8 characters, including letters and
+                numbers.
+              </div>
+
+              <form method="post" id="passwordForm">
+                {% csrf_token %}
+
+                <!-- Old Password -->
+                <div class="mb-3 form-group-modern">
+                  <label for="{{ password_form.old_password.id_for_label }}" class="form-label">
+                    <i class="fas fa-lock me-2 label-icon"></i>Current Password
+                  </label>
+                  <div class="input-wrapper password-wrapper">
+                    {{ password_form.old_password }}
+                    <button type="button" class="password-toggle"
+                      onclick="togglePasswordVisibility('{{ password_form.old_password.id_for_label }}', this)">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <div class="input-underline"></div>
+                  </div>
+                  {% if password_form.old_password.errors %}
+                  <div class="error-message mt-2">
+                    <i class="fas fa-exclamation-circle me-1"></i>{{ password_form.old_password.errors }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <!-- New Password -->
+                <div class="mb-3 form-group-modern">
+                  <label for="{{ password_form.new_password1.id_for_label }}" class="form-label">
+                    <i class="fas fa-key me-2 label-icon"></i>New Password
+                  </label>
+                  <div class="input-wrapper password-wrapper">
+                    {{ password_form.new_password1 }}
+                    <button type="button" class="password-toggle"
+                      onclick="togglePasswordVisibility('{{ password_form.new_password1.id_for_label }}', this)">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <div class="input-underline"></div>
+                  </div>
+                  {% if password_form.new_password1.errors %}
+                  <div class="error-message mt-2">
+                    <i class="fas fa-exclamation-circle me-1"></i>{{ password_form.new_password1.errors }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <!-- Confirm New Password -->
+                <div class="mb-4 form-group-modern">
+                  <label for="{{ password_form.new_password2.id_for_label }}" class="form-label">
+                    <i class="fas fa-check-circle me-2 label-icon"></i>Confirm New Password
+                  </label>
+                  <div class="input-wrapper password-wrapper">
+                    {{ password_form.new_password2 }}
+                    <button type="button" class="password-toggle"
+                      onclick="togglePasswordVisibility('{{ password_form.new_password2.id_for_label }}', this)">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <div class="input-underline"></div>
+                  </div>
+                  {% if password_form.new_password2.errors %}
+                  <div class="error-message mt-2">
+                    <i class="fas fa-exclamation-circle me-1"></i>{{ password_form.new_password2.errors }}
+                  </div>
+                  {% endif %}
+                </div>
+
+                <button type="submit" name="change_password" class="btn btn-danger btn-lg w-100 submit-btn">
+                  <i class="fas fa-shield-alt me-2"></i>Update Password
+                  <span class="btn-shine"></span>
+                </button>
+              </form>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Profile Edit Form -->
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-4">
-          <h5 class="card-title mb-3">
-            <i class="fas fa-edit me-2 text-success"></i>Edit Profile Information
-          </h5>
-          <form method="post">
-            {% csrf_token %}
-
-            <!-- Username -->
-            <div class="mb-3">
-              <label for="{{ profile_form.username.id_for_label }}" class="form-label fw-semibold">
-                <i class="fas fa-user me-2 text-primary"></i>Username
-              </label>
-              {{ profile_form.username }}
-              {% if profile_form.username.errors %}
-              <div class="text-danger small mt-1">{{ profile_form.username.errors }}</div>
-              {% endif %}
-            </div>
-
-            <!-- Email -->
-            <div class="mb-3">
-              <label for="{{ profile_form.email.id_for_label }}" class="form-label fw-semibold">
-                <i class="fas fa-envelope me-2 text-info"></i>Email
-              </label>
-              {{ profile_form.email }}
-              {% if profile_form.email.errors %}
-              <div class="text-danger small mt-1">{{ profile_form.email.errors }}</div>
-              {% endif %}
-            </div>
-
-            <!-- First Name -->
-            <div class="mb-3">
-              <label for="{{ profile_form.first_name.id_for_label }}" class="form-label fw-semibold">
-                <i class="fas fa-id-card me-2 text-warning"></i>First Name
-              </label>
-              {{ profile_form.first_name }}
-              {% if profile_form.first_name.errors %}
-              <div class="text-danger small mt-1">{{ profile_form.first_name.errors }}</div>
-              {% endif %}
-            </div>
-
-            <!-- Last Name -->
-            <div class="mb-3">
-              <label for="{{ profile_form.last_name.id_for_label }}" class="form-label fw-semibold">
-                <i class="fas fa-id-card-alt me-2 text-secondary"></i>Last Name
-              </label>
-              {{ profile_form.last_name }}
-              {% if profile_form.last_name.errors %}
-              <div class="text-danger small mt-1">{{ profile_form.last_name.errors }}</div>
-              {% endif %}
-            </div>
-
-            <button type="submit" name="update_profile" class="btn btn-success btn-lg w-100">
-              <i class="fas fa-save me-2"></i>Update Profile
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <!-- Password Change Form -->
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-4">
-          <h5 class="card-title mb-3">
-            <i class="fas fa-key me-2 text-danger"></i>Change Password
-          </h5>
-          <form method="post">
-            {% csrf_token %}
-
-            <!-- Old Password -->
-            <div class="mb-3">
-              <label for="{{ password_form.old_password.id_for_label }}" class="form-label fw-semibold">
-                <i class="fas fa-lock me-2"></i>Current Password
-              </label>
-              {{ password_form.old_password }}
-              {% if password_form.old_password.errors %}
-              <div class="text-danger small mt-1">{{ password_form.old_password.errors }}</div>
-              {% endif %}
-            </div>
-
-            <!-- New Password -->
-            <div class="mb-3">
-              <label for="{{ password_form.new_password1.id_for_label }}" class="form-label fw-semibold">
-                <i class="fas fa-key me-2"></i>New Password
-              </label>
-              {{ password_form.new_password1 }}
-              {% if password_form.new_password1.errors %}
-              <div class="text-danger small mt-1">{{ password_form.new_password1.errors }}</div>
-              {% endif %}
-              <small class="text-muted d-block mt-1">
-                Password must be at least 8 characters and not entirely numeric.
-              </small>
-            </div>
-
-            <!-- Confirm New Password -->
-            <div class="mb-3">
-              <label for="{{ password_form.new_password2.id_for_label }}" class="form-label fw-semibold">
-                <i class="fas fa-check-circle me-2"></i>Confirm New Password
-              </label>
-              {{ password_form.new_password2 }}
-              {% if password_form.new_password2.errors %}
-              <div class="text-danger small mt-1">{{ password_form.new_password2.errors }}</div>
-              {% endif %}
-            </div>
-
-            <button type="submit" name="change_password" class="btn btn-danger btn-lg w-100">
-              <i class="fas fa-shield-alt me-2"></i>Change Password
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <!-- Back Button -->
-      <div class="text-center mb-4">
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
-          <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-        </a>
       </div>
     </div>
   </div>
 </div>
 
 <style>
-  /* Light mode styling */
-  .form-control:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  .alert {
-    border-radius: 0.5rem;
+  .profile-icon-wrapper {
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
   }
 
-  /* Dark mode styles */
-  [data-theme="dark"] .form-control {
-    background-color: #2a2a2a;
-    color: #e0e0e0;
-    border: 2px solid #4a4a4a;
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
   }
 
-  [data-theme="dark"] .form-control:focus {
-    background-color: #2a2a2a;
-    color: #ffffff;
-    border-color: #8b9dff;
-    box-shadow: 0 0 0 0.25rem rgba(139, 157, 255, 0.25);
+  .profile-icon {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    margin: 0 auto;
   }
 
-  [data-theme="dark"] .form-label {
-    color: #f0f0f0;
+  .form-card {
+    background: var(--bg-secondary);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .icon-badge {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .icon-badge-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .icon-badge-danger {
+    background: linear-gradient(135deg, #fa709a 0%, #f56565 100%);
+  }
+
+  .password-section {
+    margin-top: 1.5rem;
+  }
+
+  .password-toggle-btn {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  .password-toggle-btn:hover {
+    border-color: var(--accent-purple);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+  }
+
+  .toggle-icon {
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+    font-size: 1.2rem;
+  }
+
+  .password-toggle-btn.active .toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .password-form-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .password-form-container.show {
+    max-height: 1000px;
+  }
+
+  .form-group-modern {
+    position: relative;
+  }
+
+  .form-label {
     font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
   }
 
-  [data-theme="dark"] .card {
-    background-color: #2d2d2d;
-    border: 1px solid #404040;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  .label-icon {
+    color: var(--accent-purple);
   }
 
-  [data-theme="dark"] h2,
-  [data-theme="dark"] h5 {
-    color: #ffffff;
+  .input-wrapper {
+    position: relative;
   }
 
-  [data-theme="dark"] .text-muted {
-    color: #a0a0a0 !important;
+  .password-wrapper {
+    position: relative;
   }
 
-  [data-theme="dark"] .text-danger {
-    color: #ff6b6b !important;
-  }
-
-  [data-theme="dark"] .text-primary {
-    color: #8b9dff !important;
-  }
-
-  [data-theme="dark"] .text-success {
-    color: #6dd47e !important;
-  }
-
-  [data-theme="dark"] .text-warning {
-    color: #ffb347 !important;
-  }
-
-  [data-theme="dark"] .text-info {
-    color: #64b5f6 !important;
-  }
-
-  [data-theme="dark"] .text-secondary {
-    color: #b0b0b0 !important;
-  }
-
-  [data-theme="dark"] .btn-success {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  .password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
     border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.3s ease;
+    z-index: 10;
   }
 
-  [data-theme="dark"] .btn-success:hover {
-    background: linear-gradient(135deg, #5ac98a 0%, #48bb78 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(72, 187, 120, 0.4);
+  .password-toggle:hover {
+    color: var(--accent-purple);
   }
 
-  [data-theme="dark"] .btn-danger {
-    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  input.form-control,
+  select.form-control,
+  textarea.form-control {
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 500;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .password-wrapper input.form-control {
+    padding-right: 3rem;
+  }
+
+  input.form-control:focus,
+  select.form-control:focus,
+  textarea.form-control:focus {
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    background: var(--bg-secondary);
+    outline: none;
+  }
+
+  .input-underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input.form-control:focus~.input-underline,
+  select.form-control:focus~.input-underline,
+  textarea.form-control:focus~.input-underline {
+    width: 100%;
+  }
+
+  .error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    font-weight: 500;
+    animation: shake 0.5s ease;
+  }
+
+  @keyframes shake {
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    25% {
+      transform: translateX(-10px);
+    }
+
+    75% {
+      transform: translateX(10px);
+    }
+  }
+
+  .submit-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #43e97b 0%, #38a169 100%);
     border: none;
+    box-shadow: 0 8px 24px rgba(67, 233, 123, 0.3);
   }
 
-  [data-theme="dark"] .btn-danger:hover {
-    background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(245, 101, 101, 0.4);
+  .btn-success:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(67, 233, 123, 0.4);
   }
 
-  [data-theme="dark"] .btn-outline-secondary {
-    color: #b0b0b0;
-    border-color: #5a5a5a;
+  .btn-danger {
+    background: linear-gradient(135deg, #fa709a 0%, #f56565 100%);
+    border: none;
+    box-shadow: 0 8px 24px rgba(250, 112, 154, 0.3);
   }
 
-  [data-theme="dark"] .btn-outline-secondary:hover {
-    background-color: #3a3a3a;
-    border-color: #6a6a6a;
-    color: #ffffff;
+  .btn-danger:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(250, 112, 154, 0.4);
   }
 
-  /* Smooth transitions */
-  .form-control,
-  .btn {
-    transition: all 0.2s ease;
+  .btn-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
   }
 
-  .card {
-    transition: box-shadow 0.2s ease;
+  .submit-btn:hover .btn-shine {
+    left: 100%;
+  }
+
+  .alert-modern {
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    animation: slideDown 0.4s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .alert-success {
+    background: linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(56, 189, 248, 0.1) 100%);
+    color: #059669;
+    border-left: 4px solid #43e97b;
+  }
+
+  .alert-info {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%);
+    color: #0284c7;
+    border-left: 4px solid #38bdf8;
+  }
+
+  /* Dark Mode Adjustments */
+  [data-theme="dark"] .form-card {
+    background: var(--bg-secondary);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  [data-theme="dark"] .password-toggle-btn {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
+
+  [data-theme="dark"] input.form-control,
+  [data-theme="dark"] select.form-control,
+  [data-theme="dark"] textarea.form-control {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  [data-theme="dark"] input.form-control:focus,
+  [data-theme="dark"] select.form-control:focus,
+  [data-theme="dark"] textarea.form-control:focus {
+    background: var(--bg-secondary);
+  }
+
+  [data-theme="dark"] .alert-success {
+    background: linear-gradient(135deg, rgba(67, 233, 123, 0.15) 0%, rgba(56, 189, 248, 0.15) 100%);
+    color: #6ee7b7;
+  }
+
+  [data-theme="dark"] .alert-info {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(102, 126, 234, 0.15) 100%);
+    color: #7dd3fc;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .profile-icon {
+      width: 80px;
+      height: 80px;
+    }
+
+    .profile-icon i {
+      font-size: 2.5rem;
+    }
+
+    .icon-badge {
+      width: 45px;
+      height: 45px;
+      font-size: 1.1rem;
+    }
+
+    .form-card .card-body,
+    .password-toggle-btn {
+      padding: 1.25rem;
+    }
   }
 </style>
+
+<script>
+  function togglePasswordSection() {
+    const container = document.getElementById('passwordFormContainer');
+    const button = document.querySelector('.password-toggle-btn');
+
+    container.classList.toggle('show');
+    button.classList.toggle('active');
+  }
+
+  function togglePasswordVisibility(fieldId, button) {
+    const passwordInput = document.getElementById(fieldId);
+    const icon = button.querySelector('i');
+
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  }
+
+  // Add loading state on submit
+  document.addEventListener('DOMContentLoaded', function () {
+    const profileForm = document.getElementById('profileForm');
+    const passwordForm = document.getElementById('passwordForm');
+
+    if (profileForm) {
+      profileForm.addEventListener('submit', function (e) {
+        const submitBtn = profileForm.querySelector('.submit-btn');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+        submitBtn.disabled = true;
+      });
+    }
+
+    if (passwordForm) {
+      passwordForm.addEventListener('submit', function (e) {
+        const submitBtn = passwordForm.querySelector('.submit-btn');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+        submitBtn.disabled = true;
+      });
+    }
+  });
+</script>
 {% endblock %}

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
     <!-- Header with Month -->
     <div class="row mb-4">
         <div class="col-12">
-            <h2 class="fw-bold mb-1">{{ current_month }}</h2>
-            <p class="text-muted">Here's your spending overview</p>
+            <h1 class="fw-bold mb-2 gradient-text">{{ current_month }}</h1>
+            <p class="text-secondary fs-5">Here's your spending overview 📊</p>
         </div>
     </div>
 
@@ -13,61 +13,70 @@
     <div class="row g-4 mb-4">
         <!-- Total Spent -->
         <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100 stat-card">
+            <div class="stat-card card border-0 h-100">
                 <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3">
-                            <i class="fas fa-wallet fa-lg"></i>
-                        </div>
-                        <div>
-                            <p class="text-muted mb-0 small">Total Spent</p>
-                            <h3 class="mb-0 fw-bold">₱{{ total_spent|floatformat:2 }}</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="flex-grow-1">
+                            <div class="stat-icon-wrapper mb-3">
+                                <div class="stat-icon gradient-purple">
+                                    <i class="fas fa-wallet fa-2x"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-1 text-uppercase small fw-semibold">Total Spent</p>
+                            <h2 class="mb-0 fw-bold counter" data-target="{{ total_spent }}">₱0.00</h2>
                         </div>
                     </div>
                 </div>
+                <div class="card-footer-gradient gradient-purple"></div>
             </div>
         </div>
 
         <!-- Top Category -->
         <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100 stat-card">
+            <div class="stat-card card border-0 h-100">
                 <div class="card-body p-4">
                     {% if top_category %}
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="stat-icon bg-success bg-opacity-10 text-success rounded-circle p-3 me-3">
-                            <i class="fas fa-chart-pie fa-lg"></i>
-                        </div>
-                        <div>
-                            <p class="text-muted mb-0 small">Most Spending</p>
-                            <h5 class="mb-0 fw-bold">{{ top_category.category }}</h5>
-                            <p class="text-success mb-0">₱{{ top_category.total|floatformat:2 }}</p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="flex-grow-1">
+                            <div class="stat-icon-wrapper mb-3">
+                                <div class="stat-icon gradient-pink">
+                                    <i class="fas fa-chart-pie fa-2x"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-1 text-uppercase small fw-semibold">Most Spending</p>
+                            <h4 class="mb-1 fw-bold">{{ top_category.category }}</h4>
+                            <p class="text-success mb-0 fs-5 fw-semibold">₱{{ top_category.total|floatformat:2 }}</p>
                         </div>
                     </div>
                     {% else %}
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="stat-icon bg-success bg-opacity-10 text-success rounded-circle p-3 me-3">
-                            <i class="fas fa-smile fa-lg"></i>
+                    <div class="text-center py-3">
+                        <div class="stat-icon-wrapper mb-3 mx-auto">
+                            <div class="stat-icon gradient-pink">
+                                <i class="fas fa-smile fa-2x"></i>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-muted mb-0">No expenses yet</p>
-                            <p class="small mb-0">Start tracking!</p>
-                        </div>
+                        <p class="text-muted mb-0">No expenses yet</p>
+                        <p class="small mb-0">Start tracking! 🚀</p>
                     </div>
                     {% endif %}
                 </div>
+                <div class="card-footer-gradient gradient-pink"></div>
             </div>
         </div>
 
         <!-- Quick Add Button -->
         <div class="col-md-12 col-lg-4">
-            <div class="card border-0 shadow-sm h-100 bg-gradient-primary text-white quick-add-card">
-                <div class="card-body p-4 d-flex align-items-center justify-content-center">
-                    <a href="{% url 'expense_create' %}" class="text-white text-decoration-none text-center">
-                        <i class="fas fa-plus-circle fa-3x mb-2"></i>
-                        <p class="mb-0 fw-bold">Add New Expense</p>
-                    </a>
+            <a href="{% url 'expense_create' %}" class="text-decoration-none h-100 d-block">
+                <div class="quick-add-card card border-0 h-100">
+                    <div class="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                        <div class="quick-add-icon mb-3">
+                            <i class="fas fa-plus-circle fa-4x"></i>
+                        </div>
+                        <h4 class="mb-1 fw-bold text-white">Add New Expense</h4>
+                        <p class="mb-0 text-white-50">Track your spending in seconds</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -75,15 +84,25 @@
     <div class="row g-4 mb-4">
         <!-- Category Breakdown Pie Chart -->
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 chart-card">
                 <div class="card-body p-4">
-                    <h5 class="card-title fw-bold mb-4">💰 Where My Money Went</h5>
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="chart-icon me-3">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-0">Where My Money Went</h5>
+                    </div>
                     {% if category_stats %}
-                    <canvas id="categoryChart" height="250"></canvas>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
                     {% else %}
-                    <div class="text-center py-5 text-muted">
-                        <i class="fas fa-chart-pie fa-3x mb-3 opacity-25"></i>
-                        <p>No expenses to show yet</p>
+                    <div class="text-center py-5 empty-state">
+                        <i class="fas fa-chart-pie fa-4x mb-3 opacity-25"></i>
+                        <p class="text-muted">No expenses to show yet</p>
+                        <a href="{% url 'expense_create' %}" class="btn btn-primary btn-sm mt-2">
+                            <i class="fas fa-plus me-2"></i>Add First Expense
+                        </a>
                     </div>
                     {% endif %}
                 </div>
@@ -92,10 +111,17 @@
 
         <!-- Monthly Trend Bar Chart -->
         <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 chart-card">
                 <div class="card-body p-4">
-                    <h5 class="card-title fw-bold mb-4">📊 Last 6 Months</h5>
-                    <canvas id="monthlyChart" height="250"></canvas>
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="chart-icon me-3">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-0">Last 6 Months Trend</h5>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -104,29 +130,44 @@
     <!-- Recent Expenses -->
     <div class="row">
         <div class="col-12">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0">
                 <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title fw-bold mb-0">Recent Expenses</h5>
-                        <a href="{% url 'expense_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="chart-icon me-3">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <h5 class="card-title fw-bold mb-0">Recent Expenses</h5>
+                        </div>
+                        <a href="{% url 'expense_list' %}" class="btn btn-outline-primary btn-sm">
+                            View All <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
                     </div>
                     {% if recent_expenses %}
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover expense-table">
                             <tbody>
                                 {% for expense in recent_expenses %}
-                                <tr>
-                                    <td class="border-0">
+                                <tr class="expense-row">
+                                    <td class="border-0 py-3">
                                         <div class="d-flex align-items-center">
-                                            <span class="category-badge me-2">{{ expense.category }}</span>
+                                            <span class="category-badge me-3">{{ expense.category }}</span>
                                             <div>
-                                                <strong>{{ expense.title }}</strong>
-                                                <br><small class="text-muted">{{ expense.date|date:"M d, Y" }}</small>
+                                                <strong class="d-block">{{ expense.title }}</strong>
+                                                <small class="text-muted">
+                                                    <i class="far fa-calendar me-1"></i>{{ expense.date|date:"M d, Y" }}
+                                                </small>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="border-0 text-end">
-                                        <strong class="text-primary">₱{{ expense.amount|floatformat:2 }}</strong>
+                                    <td class="border-0 text-end py-3">
+                                        <strong class="amount-text">₱{{ expense.amount|floatformat:2 }}</strong>
+                                    </td>
+                                    <td class="border-0 text-end py-3">
+                                        <a href="{% url 'expense_detail' expense.pk %}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -134,10 +175,13 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="text-center py-4 text-muted">
-                        <i class="fas fa-receipt fa-3x mb-3 opacity-25"></i>
-                        <p>No recent expenses</p>
-                        <a href="{% url 'expense_create' %}" class="btn btn-primary">Add Your First Expense</a>
+                    <div class="text-center py-5 empty-state">
+                        <i class="fas fa-receipt fa-4x mb-3 opacity-25"></i>
+                        <h5 class="fw-bold mb-2">No recent expenses</h5>
+                        <p class="text-muted mb-4">Start tracking your expenses to see them here</p>
+                        <a href="{% url 'expense_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-2"></i>Add Your First Expense
+                        </a>
                     </div>
                     {% endif %}
                 </div>
@@ -149,6 +193,26 @@
 <!-- Chart.js Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 <script>
+    // Counter Animation
+    document.querySelectorAll('.counter').forEach(counter => {
+        const target = parseFloat(counter.getAttribute('data-target'));
+        const duration = 2000;
+        const increment = target / (duration / 16);
+        let current = 0;
+
+        const updateCounter = () => {
+            current += increment;
+            if (current < target) {
+                counter.textContent = '₱' + current.toFixed(2);
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.textContent = '₱' + target.toFixed(2);
+            }
+        };
+
+        updateCounter();
+    });
+
     // Category Pie Chart
     {% if category_stats %}
     const categoryCtx = document.getElementById('categoryChart');
@@ -159,15 +223,16 @@
         datasets: [{
             data: [{% for cat in category_stats %}{{ cat.total }}{% if not forloop.last %}, {% endif %} {% endfor %}],
     backgroundColor: [
-        '#FF6384',
-        '#36A2EB',
-        '#FFCE56',
-        '#4BC0C0',
-        '#9966FF'
+        'rgba(102, 126, 234, 0.8)',
+        'rgba(240, 147, 251, 0.8)',
+        'rgba(79, 172, 254, 0.8)',
+        'rgba(67, 233, 123, 0.8)',
+        'rgba(250, 140, 22, 0.8)'
     ],
-        borderWidth: 0
-        }]
-    },
+        borderWidth: 0,
+            hoverOffset: 10
+            }]
+        },
     options: {
         responsive: true,
             maintainAspectRatio: true,
@@ -175,20 +240,32 @@
             legend: {
                 position: 'bottom',
                     labels: {
-                    padding: 15,
-                        font: { size: 12 }
+                    padding: 20,
+                        font: { size: 13, weight: '500' },
+                    usePointStyle: true,
+                        pointStyle: 'circle'
                 }
             },
             tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                        titleFont: { size: 14, weight: 'bold' },
+                bodyFont: { size: 13 },
                 callbacks: {
                     label: function(context) {
                         return context.label + ': ₱' + context.parsed.toFixed(2);
                     }
                 }
             }
+        },
+        animation: {
+            animateRotate: true,
+                animateScale: true,
+                    duration: 1500,
+                        easing: 'easeInOutQuart'
         }
     }
-});
+    });
     {% endif %}
 
     // Monthly Trend Bar Chart
@@ -200,17 +277,22 @@
         datasets: [{
             label: 'Spending',
             data: [{% for month in months_data %}{{ month.total }}{% if not forloop.last %}, {% endif %} {% endfor %}],
-    backgroundColor: '#4A90E2',
-        borderRadius: 6,
-            borderSkipped: false
-        }]
-    },
+    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+        borderRadius: 8,
+            borderSkipped: false,
+                hoverBackgroundColor: 'rgba(102, 126, 234, 1)'
+            }]
+        },
     options: {
         responsive: true,
             maintainAspectRatio: true,
                 plugins: {
             legend: { display: false },
             tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                        titleFont: { size: 14, weight: 'bold' },
+                bodyFont: { size: 13 },
                 callbacks: {
                     label: function(context) {
                         return '₱' + context.parsed.y.toFixed(2);
@@ -224,55 +306,226 @@
                     ticks: {
                     callback: function(value) {
                         return '₱' + value;
-                    }
+                    },
+                    font: { size: 12 }
                 },
-                grid: { display: false }
+                grid: {
+                    display: true,
+                        color: 'rgba(0, 0, 0, 0.05)'
+                }
             },
             x: {
-                grid: { display: false }
+                grid: { display: false },
+                ticks: {
+                    font: { size: 12, weight: '500' }
+                }
             }
+        },
+        animation: {
+            duration: 1500,
+                easing: 'easeInOutQuart'
         }
     }
-});
+    });
 </script>
 
 <style>
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
     .stat-card {
-        transition: transform 0.2s;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .stat-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon-wrapper {
+        display: inline-block;
     }
 
     .stat-icon {
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .gradient-purple {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .gradient-pink {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .gradient-blue {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .card-footer-gradient {
+        height: 4px;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
     }
 
     .quick-add-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .quick-add-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
     }
 
     .quick-add-card:hover {
-        transform: scale(1.02);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+    }
+
+    .quick-add-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .quick-add-card:hover .quick-add-icon {
+        transform: scale(1.2) rotate(90deg);
+    }
+
+    .chart-card {
+        transition: all 0.3s ease;
+    }
+
+    .chart-card:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    .chart-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
     }
 
     .category-badge {
         display: inline-block;
-        padding: 4px 12px;
-        background: #f0f0f0;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
         border-radius: 20px;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        white-space: nowrap;
     }
 
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    .expense-table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .expense-table tbody tr:hover {
+        background: rgba(102, 126, 234, 0.05);
+        transform: translateX(5px);
+    }
+
+    .amount-text {
+        font-size: 1.1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .empty-state i {
+        color: var(--text-muted);
+    }
+
+    /* Dark Mode Adjustments */
+    [data-theme="dark"] .stat-card {
+        background: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] .chart-card {
+        background: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] .expense-table tbody tr:hover {
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    /* Dark Mode Text Visibility */
+    [data-theme="dark"] .stat-card h2,
+    [data-theme="dark"] .stat-card h3,
+    [data-theme="dark"] .stat-card h4,
+    [data-theme="dark"] .stat-card h5,
+    [data-theme="dark"] .stat-card p {
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .chart-card h5,
+    [data-theme="dark"] .chart-card p {
+        color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .category-badge {
+        color: #ffffff;
+    }
+
+    [data-theme="dark"] strong {
+        color: var(--text-primary);
+    }
+
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+        }
+
+        .chart-container {
+            height: 250px;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+        }
     }
 </style>
 {% endblock %}

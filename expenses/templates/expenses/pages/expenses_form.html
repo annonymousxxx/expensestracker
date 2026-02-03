@@ -1,240 +1,403 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
   <div class="row justify-content-center">
-    <div class="col-lg-6">
+    <div class="col-lg-6 col-md-8">
+
       <!-- Header -->
-      <div class="mb-4">
-        <h2 class="fw-bold mb-1">{{ title }}</h2>
-        <p class="text-muted">Fill in the details below</p>
+      <div class="text-center mb-4">
+        <div class="icon-circle mb-3">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <h2 class="fw-bold gradient-text mb-2">{{ title }}</h2>
+        <p class="text-muted">Quick and easy - just 4 simple fields</p>
       </div>
 
       <!-- Form Card -->
-      <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-          <form method="post">
-            {% csrf_token %}
+      <div class="simple-card">
+        <form method="post" id="expenseForm">
+          {% csrf_token %}
 
-            <!-- Title Field -->
-            <div class="mb-4">
-              <label for="id_title" class="form-label fw-semibold">
-                <i class="fas fa-heading me-2 text-primary"></i>Title
-              </label>
-              {{ form.title }}
-              {% if form.title.errors %}
-              <div class="text-danger small mt-1">{{ form.title.errors }}</div>
-              {% endif %}
-            </div>
+          <!-- Step 1: What -->
+          <div class="form-step mb-4">
+            <div class="step-number">1</div>
+            <label for="id_title" class="form-label">
+              What did you spend on? <span class="required">*</span>
+            </label>
+            {{ form.title }}
+            <small class="form-help">Example: Groceries, Coffee, Taxi</small>
+            {% if form.title.errors %}
+            <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+            {% endif %}
+          </div>
 
-            <!-- Amount Field -->
-            <div class="mb-4">
-              <label for="id_amount" class="form-label fw-semibold">
-                <i class="fas fa-peso-sign me-2 text-success"></i>Amount
-              </label>
+          <!-- Step 2: How Much -->
+          <div class="form-step mb-4">
+            <div class="step-number">2</div>
+            <label for="id_amount" class="form-label">
+              How much did you spend? <span class="required">*</span>
+            </label>
+            <div class="amount-wrapper">
+              <span class="peso-sign">₱</span>
               {{ form.amount }}
-              {% if form.amount.errors %}
-              <div class="text-danger small mt-1">{{ form.amount.errors }}</div>
-              {% endif %}
+            </div>
+            <small class="form-help">Enter amount in Philippine Peso</small>
+            {% if form.amount.errors %}
+            <div class="text-danger small mt-1">{{ form.amount.errors }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Step 3: When & Category -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="form-step">
+                <div class="step-number">3</div>
+                <label for="id_date" class="form-label">
+                  When? <span class="required">*</span>
+                </label>
+                {{ form.date }}
+                <small class="form-help">Date of expense</small>
+                {% if form.date.errors %}
+                <div class="text-danger small mt-1">{{ form.date.errors }}</div>
+                {% endif %}
+              </div>
             </div>
 
-            <!-- Category Field -->
-            <div class="mb-4">
-              <label for="id_category" class="form-label fw-semibold">
-                <i class="fas fa-tag me-2 text-warning"></i>Category
-              </label>
-              {{ form.category }}
-              {% if form.category.errors %}
-              <div class="text-danger small mt-1">{{ form.category.errors }}</div>
-              {% endif %}
+            <div class="col-md-6">
+              <div class="form-step">
+                <div class="step-number">4</div>
+                <label for="id_category" class="form-label">
+                  Category? <span class="required">*</span>
+                </label>
+                {{ form.category }}
+                <small class="form-help">Pick one</small>
+                {% if form.category.errors %}
+                <div class="text-danger small mt-1">{{ form.category.errors }}</div>
+                {% endif %}
+              </div>
             </div>
+          </div>
 
-            <!-- Date Field -->
-            <div class="mb-4">
-              <label for="id_date" class="form-label fw-semibold">
-                <i class="far fa-calendar me-2 text-info"></i>Date
-              </label>
-              {{ form.date }}
-              {% if form.date.errors %}
-              <div class="text-danger small mt-1">{{ form.date.errors }}</div>
-              {% endif %}
+          <!-- Optional: Notes -->
+          <div class="optional-section mb-4">
+            <div class="optional-header" onclick="toggleNotes()">
+              <i class="fas fa-plus-circle me-2"></i>
+              <span>Add notes (optional)</span>
+              <i class="fas fa-chevron-down ms-auto toggle-icon"></i>
             </div>
-
-            <!-- Description Field -->
-            <div class="mb-4">
-              <label for="id_description" class="form-label fw-semibold">
-                <i class="fas fa-comment me-2"></i>Description
-                <span class="text-muted fw-normal">(optional)</span>
-              </label>
+            <div class="optional-content" id="notesSection" style="display: none;">
               {{ form.description }}
+              <small class="form-help">Any extra details you want to remember</small>
               {% if form.description.errors %}
               <div class="text-danger small mt-1">{{ form.description.errors }}</div>
               {% endif %}
             </div>
+          </div>
 
-            <!-- Action Buttons -->
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary btn-lg flex-fill">
-                <i class="fas fa-save me-2"></i>Save Expense
-              </button>
-              <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-lg">
-                <i class="fas fa-times"></i>
-              </a>
-            </div>
-          </form>
-        </div>
+          <!-- Buttons -->
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-check-circle me-2"></i>Save Expense
+            </button>
+            <a href="{% url 'expense_list' %}" class="btn btn-link text-muted">
+              Cancel
+            </a>
+          </div>
+        </form>
       </div>
 
-      <!-- Quick Tip -->
-      <div class="alert alert-info border-0 mt-3 d-flex align-items-center">
-        <i class="fas fa-lightbulb fa-2x me-3"></i>
-        <div>
-          <strong>Pro Tip:</strong> Fill this in 5 seconds! Just amount → category → save.
-        </div>
+      <!-- Help Text -->
+      <div class="text-center mt-3">
+        <small class="text-muted">
+          <i class="fas fa-info-circle me-1"></i>
+          All fields marked with <span class="required">*</span> are required
+        </small>
       </div>
+
     </div>
   </div>
 </div>
 
 <style>
-  /* Light mode form field focus states */
-  .form-control:focus,
-  .form-select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  /* Alert box - light mode */
-  .alert-info {
-    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
-    color: #014451;
-    border: 1px solid #b2ebf2;
+  .icon-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    animation: pulse 2s ease-in-out infinite;
   }
 
-  /* Form field sizing */
-  #id_title,
-  #id_amount,
-  #id_date {
-    font-size: 1.25rem;
-    padding: 0.5rem 1rem;
+  @keyframes pulse {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.05);
+    }
   }
 
-  #id_category {
-    font-size: 1.25rem;
-    padding: 0.5rem 1rem;
+  .simple-card {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.4s ease-out;
   }
 
-  #id_description {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .form-step {
+    position: relative;
+    padding-left: 50px;
+  }
+
+  .step-number {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
     font-size: 1rem;
-    padding: 0.5rem 1rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   }
 
-  /* ===== DARK MODE STYLES ===== */
-  [data-theme="dark"] .alert-info {
-    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a7b 100%);
-    color: #a8d5ff;
-    border: 1px solid #3d6a8f;
+  .form-label {
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    display: block;
   }
 
-  [data-theme="dark"] .alert-info .fa-lightbulb {
-    color: #ffd700;
+  .required {
+    color: #dc3545;
+    font-weight: 700;
   }
 
-  [data-theme="dark"] .alert-info strong {
-    color: #ffffff;
+  input.form-control,
+  select.form-control,
+  textarea.form-control {
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.875rem 1.25rem;
+    font-size: 1.05rem;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    width: 100%;
   }
 
-  /* Enhanced form inputs for dark mode */
-  [data-theme="dark"] .form-control,
-  [data-theme="dark"] .form-select {
-    background-color: #2a2a2a;
-    color: #e0e0e0;
-    border: 2px solid #4a4a4a;
+  input.form-control:focus,
+  select.form-control:focus,
+  textarea.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    background: var(--bg-secondary);
+    outline: none;
   }
 
-  [data-theme="dark"] .form-control:focus,
-  [data-theme="dark"] .form-select:focus {
-    background-color: #2a2a2a;
-    color: #ffffff;
-    border-color: #8b9dff;
-    box-shadow: 0 0 0 0.25rem rgba(139, 157, 255, 0.25);
+  .amount-wrapper {
+    position: relative;
   }
 
-  [data-theme="dark"] .form-control::placeholder {
-    color: #888888;
+  .peso-sign {
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #667eea;
+    font-weight: 700;
+    font-size: 1.2rem;
+    z-index: 10;
   }
 
-  /* Enhanced labels for dark mode */
-  [data-theme="dark"] .form-label {
-    color: #f0f0f0;
+  #id_amount {
+    padding-left: 2.75rem;
+    font-size: 1.2rem;
     font-weight: 600;
   }
 
-  /* Icon colors for better visibility in dark mode */
-  [data-theme="dark"] .text-primary {
-    color: #8b9dff !important;
+  textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
   }
 
-  [data-theme="dark"] .text-success {
-    color: #6dd47e !important;
+  .form-help {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-style: italic;
   }
 
-  [data-theme="dark"] .text-warning {
-    color: #ffb347 !important;
+  .optional-section {
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
   }
 
-  [data-theme="dark"] .text-info {
-    color: #64b5f6 !important;
-  }
-
-  /* Enhanced card styling for dark mode */
-  [data-theme="dark"] .card {
-    background-color: #2d2d2d;
-    border: 1px solid #404040;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Button styling for dark mode */
-  [data-theme="dark"] .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-  }
-
-  [data-theme="dark"] .btn-primary:hover {
-    background: linear-gradient(135deg, #7a8ef5 0%, #8a5cb8 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
-  }
-
-  [data-theme="dark"] .btn-outline-secondary {
-    color: #b0b0b0;
-    border-color: #5a5a5a;
-  }
-
-  [data-theme="dark"] .btn-outline-secondary:hover {
-    background-color: #3a3a3a;
-    border-color: #6a6a6a;
-    color: #ffffff;
-  }
-
-  /* Improved text colors */
-  [data-theme="dark"] h2 {
-    color: #ffffff;
-  }
-
-  [data-theme="dark"] .text-muted {
-    color: #a0a0a0 !important;
-  }
-
-  /* Error message styling */
-  [data-theme="dark"] .text-danger {
-    color: #ff6b6b !important;
-  }
-
-  /* Add smooth transitions */
-  .form-control,
-  .form-select,
-  .btn {
+  .optional-header {
+    padding: 1rem 1.25rem;
+    background: var(--bg-tertiary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: var(--text-secondary);
     transition: all 0.2s ease;
   }
+
+  .optional-header:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+  }
+
+  .toggle-icon {
+    transition: transform 0.3s ease;
+    font-size: 0.85rem;
+  }
+
+  .optional-header.active .toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  .optional-content {
+    padding: 1.25rem;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      max-height: 0;
+    }
+
+    to {
+      opacity: 1;
+      max-height: 500px;
+    }
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-link {
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .btn-link:hover {
+    color: #667eea !important;
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .simple-card {
+    background: var(--bg-secondary);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="dark"] input.form-control,
+  [data-theme="dark"] select.form-control,
+  [data-theme="dark"] textarea.form-control {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+
+  [data-theme="dark"] .optional-header {
+    background: var(--bg-tertiary);
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .simple-card {
+      padding: 1.75rem;
+    }
+
+    .form-step {
+      padding-left: 45px;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      font-size: 0.9rem;
+    }
+  }
 </style>
+
+<script>
+  function toggleNotes() {
+    const notesSection = document.getElementById('notesSection');
+    const header = document.querySelector('.optional-header');
+
+    if (notesSection.style.display === 'none') {
+      notesSection.style.display = 'block';
+      header.classList.add('active');
+    } else {
+      notesSection.style.display = 'none';
+      header.classList.remove('active');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('expenseForm');
+
+    form.addEventListener('submit', function (e) {
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+      submitBtn.disabled = true;
+    });
+
+    // Auto-focus
+    const titleField = document.getElementById('id_title');
+    if (titleField) titleField.focus();
+  });
+</script>
 {% endblock %}

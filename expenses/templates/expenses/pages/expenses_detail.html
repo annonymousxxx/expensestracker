@@ -1,60 +1,74 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
+        <div class="col-lg-7 col-xl-6">
             <!-- Back Button -->
-            <div class="mb-3">
-                <a href="{% url 'expense_list' %}" class="text-decoration-none text-muted">
+            <div class="mb-4">
+                <a href="{% url 'expense_list' %}" class="back-link">
                     <i class="fas fa-arrow-left me-2"></i>Back to All Expenses
                 </a>
             </div>
 
             <!-- Main Card -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-4">
-                    <!-- Header with Category Badge -->
-                    <div class="mb-4">
+            <div class="detail-card card border-0">
+                <div class="card-body p-4 p-md-5">
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <div class="expense-icon-wrapper mb-3">
+                            <div class="expense-icon">
+                                <i class="fas fa-receipt fa-2x"></i>
+                            </div>
+                        </div>
                         <span class="category-badge mb-3 d-inline-block">{{ expense.category }}</span>
-                        <h2 class="fw-bold mb-2">{{ expense.title }}</h2>
+                        <h2 class="fw-bold mb-2 gradient-text">{{ expense.title }}</h2>
                         <p class="text-muted mb-0">
                             <i class="far fa-calendar me-2"></i>{{ expense.date|date:"F d, Y" }}
                         </p>
                     </div>
 
                     <!-- Amount Display -->
-                    <div class="alert alert-primary bg-primary bg-opacity-10 border-0 mb-4">
+                    <div class="amount-card mb-4">
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Amount</span>
-                            <h3 class="text-primary fw-bold mb-0">₱{{ expense.amount|floatformat:2 }}</h3>
+                            <span class="amount-label">Total Amount</span>
+                            <h3 class="amount-value mb-0">₱{{ expense.amount|floatformat:2 }}</h3>
                         </div>
                     </div>
 
                     <!-- Description -->
                     {% if expense.description %}
-                    <div class="mb-4">
-                        <h6 class="fw-semibold mb-2">
-                            <i class="fas fa-comment-dots me-2 text-muted"></i>Description
-                        </h6>
-                        <p class="text-muted">{{ expense.description }}</p>
+                    <div class="description-section mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="section-icon me-3">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <h6 class="fw-semibold mb-0">Description</h6>
+                        </div>
+                        <p class="description-text">{{ expense.description }}</p>
                     </div>
                     {% endif %}
 
                     <!-- Metadata -->
-                    <div class="border-top pt-3 mb-4">
-                        <small class="text-muted">
-                            <i class="far fa-clock me-1"></i>
-                            Added on {{ expense.created_at|date:"M d, Y g:i A" }}
-                        </small>
+                    <div class="metadata-section mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="metadata-icon me-2">
+                                <i class="far fa-clock"></i>
+                            </div>
+                            <small class="text-muted">
+                                Added on {{ expense.created_at|date:"M d, Y g:i A" }}
+                            </small>
+                        </div>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="d-flex gap-2">
-                        <a href="{% url 'expense_update' expense.pk %}" class="btn btn-primary flex-fill">
+                    <div class="d-flex gap-3">
+                        <a href="{% url 'expense_update' expense.pk %}"
+                            class="btn btn-primary btn-lg flex-fill submit-btn">
                             <i class="fas fa-edit me-2"></i>Edit Expense
+                            <span class="btn-shine"></span>
                         </a>
-                        <a href="{% url 'expense_delete' expense.pk %}" class="btn btn-outline-danger flex-fill">
-                            <i class="fas fa-trash me-2"></i>Delete
+                        <a href="{% url 'expense_delete' expense.pk %}" class="btn btn-outline-danger btn-lg">
+                            <i class="fas fa-trash"></i>
                         </a>
                     </div>
                 </div>
@@ -64,13 +78,248 @@
 </div>
 
 <style>
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+
+    .back-link:hover {
+        color: var(--accent-purple);
+        background: rgba(102, 126, 234, 0.1);
+        transform: translateX(-5px);
+    }
+
+    .detail-card {
+        background: var(--bg-secondary);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .expense-icon-wrapper {
+        display: inline-block;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .expense-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        margin: 0 auto;
+    }
+
     .category-badge {
-        padding: 6px 16px;
+        padding: 8px 20px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border-radius: 20px;
         font-size: 0.9rem;
-        font-weight: 500;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .amount-card {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .amount-card:hover {
+        border-color: rgba(102, 126, 234, 0.4);
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    }
+
+    .amount-label {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .amount-value {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2rem;
+        font-weight: 800;
+    }
+
+    .description-section {
+        padding: 1.5rem;
+        background: var(--bg-tertiary);
+        border-radius: 12px;
+        border-left: 4px solid var(--accent-purple);
+    }
+
+    .section-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .description-text {
+        color: var(--text-primary);
+        line-height: 1.8;
+        margin: 0;
+        padding-left: 53px;
+    }
+
+    .metadata-section {
+        padding: 1rem;
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 10px;
+    }
+
+    .metadata-icon {
+        color: var(--accent-purple);
+        font-size: 1.1rem;
+    }
+
+    .submit-btn {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-shine {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .submit-btn:hover .btn-shine {
+        left: 100%;
+    }
+
+    .btn-outline-danger {
+        border: 2px solid rgba(220, 53, 69, 0.3);
+        color: #dc3545;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-danger:hover {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border-color: transparent;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Dark Mode Adjustments */
+    [data-theme="dark"] .detail-card {
+        background: var(--bg-secondary);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .amount-card {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        border-color: rgba(102, 126, 234, 0.3);
+    }
+
+    [data-theme="dark"] .description-section {
+        background: var(--bg-tertiary);
+    }
+
+    [data-theme="dark"] .metadata-section {
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .expense-icon {
+            width: 70px;
+            height: 70px;
+        }
+
+        .expense-icon i {
+            font-size: 1.5rem;
+        }
+
+        .amount-value {
+            font-size: 1.75rem;
+        }
+
+        .description-text {
+            padding-left: 0;
+            margin-top: 1rem;
+        }
     }
 </style>
 {% endblock %}

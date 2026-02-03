@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 py-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
-                    <h2 class="fw-bold mb-1">All Expenses</h2>
-                    <p class="text-muted mb-0">Complete history of your spending</p>
+                    <h1 class="fw-bold mb-2 gradient-text">All Expenses</h1>
+                    <p class="text-secondary fs-5 mb-0">Complete history of your spending 💳</p>
                 </div>
-                <a href="{% url 'expense_create' %}" class="btn btn-primary">
+                <a href="{% url 'expense_create' %}" class="btn btn-primary btn-lg">
                     <i class="fas fa-plus-circle me-2"></i>Add Expense
                 </a>
             </div>
@@ -18,27 +18,32 @@
 
     <!-- Expenses List -->
     {% if expenses %}
-    <div class="row g-3">
+    <div class="row g-4">
         {% for expense in expenses %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card border-0 shadow-sm h-100 expense-card">
-                <div class="card-body">
+        <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="expense-card card border-0 h-100">
+                <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="flex-grow-1">
-                            <span class="category-badge mb-2 d-inline-block">{{ expense.category }}</span>
-                            <h5 class="card-title fw-bold mb-1">{{ expense.title }}</h5>
-                            <p class="text-muted small mb-0">
-                                <i class="far fa-calendar me-1"></i>{{ expense.date|date:"M d, Y" }}
-                            </p>
+                        <span class="category-badge">{{ expense.category }}</span>
+                        <div class="expense-amount">
+                            <h4 class="mb-0 fw-bold amount-text">₱{{ expense.amount|floatformat:2 }}</h4>
                         </div>
-                        <h4 class="text-primary fw-bold mb-0">₱{{ expense.amount|floatformat:2 }}</h4>
+                    </div>
+
+                    <h5 class="card-title fw-bold mb-2">{{ expense.title }}</h5>
+
+                    <div class="expense-date mb-3">
+                        <i class="far fa-calendar me-2 text-primary"></i>
+                        <small class="text-muted">{{ expense.date|date:"M d, Y" }}</small>
                     </div>
 
                     {% if expense.description %}
-                    <p class="text-muted small mb-3">{{ expense.description|truncatewords:15 }}</p>
+                    <p class="text-muted small mb-3 expense-description">
+                        {{ expense.description|truncatewords:15 }}
+                    </p>
                     {% endif %}
 
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 mt-auto">
                         <a href="{% url 'expense_detail' expense.pk %}"
                             class="btn btn-sm btn-outline-primary flex-fill">
                             <i class="fas fa-eye me-1"></i>View
@@ -52,6 +57,7 @@
                         </a>
                     </div>
                 </div>
+                <div class="card-accent"></div>
             </div>
         </div>
         {% endfor %}
@@ -59,11 +65,13 @@
     {% else %}
     <div class="row">
         <div class="col-12">
-            <div class="card border-0 shadow-sm text-center py-5">
-                <div class="card-body">
-                    <i class="fas fa-receipt fa-4x text-muted opacity-25 mb-3"></i>
-                    <h4 class="fw-bold mb-2">No Expenses Yet</h4>
-                    <p class="text-muted mb-4">Start tracking by adding your first expense</p>
+            <div class="empty-state-card card border-0 text-center">
+                <div class="card-body p-5">
+                    <div class="empty-icon mb-4">
+                        <i class="fas fa-receipt fa-5x"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">No Expenses Yet</h3>
+                    <p class="text-muted mb-4 fs-5">Start tracking by adding your first expense</p>
                     <a href="{% url 'expense_create' %}" class="btn btn-primary btn-lg">
                         <i class="fas fa-plus-circle me-2"></i>Add Your First Expense
                     </a>
@@ -75,22 +83,246 @@
 </div>
 
 <style>
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
     .expense-card {
-        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        background: var(--bg-secondary);
+    }
+
+    .expense-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .expense-card:hover::before {
+        opacity: 1;
     }
 
     .expense-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-accent {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .expense-card:hover .card-accent {
+        transform: scaleX(1);
     }
 
     .category-badge {
-        padding: 4px 12px;
+        display: inline-block;
+        padding: 6px 14px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 500;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .expense-card:hover .category-badge {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+
+    .amount-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 1.5rem;
+    }
+
+    .expense-date {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 8px;
+        width: fit-content;
+    }
+
+    .expense-description {
+        line-height: 1.6;
+        min-height: 40px;
+    }
+
+    .btn-outline-primary {
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        color: var(--accent-purple);
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid rgba(108, 117, 125, 0.3);
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--text-secondary);
+        border-color: transparent;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-danger {
+        border: 2px solid rgba(220, 53, 69, 0.3);
+        color: #dc3545;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-danger:hover {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border-color: transparent;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state-card {
+        background: var(--bg-secondary);
+        padding: 3rem 1rem;
+    }
+
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .empty-icon i {
+        color: var(--accent-purple);
+        opacity: 0.5;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    /* Dark Mode Adjustments */
+    [data-theme="dark"] .expense-card {
+        background: var(--bg-secondary);
+        border-color: var(--border-color);
+    }
+
+    [data-theme="dark"] .expense-date {
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    [data-theme="dark"] .empty-state-card {
+        background: var(--bg-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .expense-card {
+            margin-bottom: 1rem;
+        }
+
+        .amount-text {
+            font-size: 1.25rem;
+        }
+
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+        }
+
+        .empty-icon i {
+            font-size: 4rem;
+        }
+    }
+
+    /* Stagger animation for cards */
+    .expense-card {
+        animation: fadeInUp 0.6s ease-out;
+        animation-fill-mode: both;
+    }
+
+        {
+        % for i in "0123456789" %
+    }
+
+    .expense-card:nth-child({
+            {
+            forloop.counter
+        }
+
+    }) {
+        animation-delay: {
+                {
+                forloop.counter0|add: "0"
+            }
+        }
+
+        00ms;
+    }
+
+        {
+        % endfor %
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 {% endblock %}

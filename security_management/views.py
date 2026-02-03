@@ -71,4 +71,5 @@ def profile_view(request):
 
 def logout_view(request):
     logout(request)
-    return render(request, 'security_management/pages/logged_out.html')
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('login')
